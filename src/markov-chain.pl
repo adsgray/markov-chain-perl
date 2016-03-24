@@ -119,7 +119,7 @@ sub get_sentences {
         #$line =~ s/[_"'\-'"\$#@~!&*()\[\];,:?^`\\\/]+//g;
         # better to leave some punctuation
         $line =~ s/[_\-\$#@~*()\[\]^`\\\/]+//g;
-        $line = lc($line);
+        #$line = lc($line);
     
         if (exclude_line($line)) {
             next;
