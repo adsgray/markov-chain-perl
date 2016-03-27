@@ -142,6 +142,10 @@ sub make_sentences {
 
     while ($num > 0) {
         # this key manipulation could be improved
+
+        if (!defined($href->{$key})) {
+            $key = random_key $href;
+        }
         my $subkey = random_key $href->{$key};
         $ret .= $subkey . " ";
         @keyarr = split /\s/,$key;
