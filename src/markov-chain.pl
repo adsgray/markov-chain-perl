@@ -20,6 +20,17 @@ sub dbg_map {
     }
 }
 
+sub dump_map_json {
+    my $mref = shift;
+    foreach my $k (sort keys %$mref) {
+        my $submap = $mref->{$k};
+        my $next = join ",", map { qq("$_") } keys %$submap;
+        # TODO: print out frequencies
+        # TODO: print out in json format
+        print qq("$k": [$next],\n);
+    }
+}
+
 sub dump_map {
     my $mref = shift;
     foreach my $k (sort keys %$mref) {
@@ -75,7 +86,7 @@ my @buf = ();
 
 sub cleanse_line {
     my $line = shift;
-    $line =~ s/[_\-\$#@~*()\[\]^`\\\/]+//g;
+    $line =~ s/["_\-\$#@~*()\[\]^`\\\/]+//g;
     return $line;
 }
 
@@ -224,6 +235,9 @@ sub character_based {
 
     while (my $line = <>) {
         chomp($line);
+        if (exclude_line($line)) {
+            next;
+        }
         $line = cleanse_line $line;
         $buf .= $line;
         $ct++;
@@ -235,7 +249,7 @@ sub character_based {
     }
 
     handle_buffer($buf);
-#    dump_map(\%map);
+#    dump_map_json(\%map);
     $out = make_sentences_char(\%map, 300);
     print "$out\n";
 }
