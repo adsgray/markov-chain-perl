@@ -73,6 +73,12 @@ my %map = ();
 
 my @buf = ();
 
+sub cleanse_line {
+    my $line = shift;
+    $line =~ s/[_\-\$#@~*()\[\]^`\\\/]+//g;
+    return $line;
+}
+
 # side effect: puts stuff into global %map
 sub handle_word {
     my $word = shift;
@@ -118,7 +124,7 @@ sub get_sentences {
         chomp($line);
         #$line =~ s/[_"'\-'"\$#@~!&*()\[\];,:?^`\\\/]+//g;
         # better to leave some punctuation
-        $line =~ s/[_\-\$#@~*()\[\]^`\\\/]+//g;
+        $line = cleanse_line $line;
         #$line = lc($line);
     
         if (exclude_line($line)) {
@@ -218,6 +224,7 @@ sub character_based {
 
     while (my $line = <>) {
         chomp($line);
+        $line = cleanse_line $line;
         $buf .= $line;
         $ct++;
         if ($ct >= $max) {
