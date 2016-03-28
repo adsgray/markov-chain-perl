@@ -68,7 +68,7 @@ sub random_key {
 }
 
 # TODO: parameterize $depth
-my $depth = 2;
+my $depth = 5;
 my %map = ();
 
 my @buf = ();
@@ -158,10 +158,80 @@ sub make_sentences {
     return $ret;
 }
 
-my $sentencesref = get_sentences();
-handle_sentences($sentencesref);
+sub make_sentences_char {
+    my $href = shift;
+    my $num = shift;
+    my $ret = "";
 
-# TODO: parameterize this stuff:
-#dump_map(\%map);
-$out = make_sentences(\%map, 300);
-print "$out\n";
+    my $key = random_key $href;
+
+    $ret = $key;
+
+    while ($num > 0) {
+        if (!defined($href->{$key})) {
+            $key = random_key $href;
+            $ret .= "\n";
+        }
+        my $subkey = random_key $href->{$key};
+        $ret .= $subkey;
+        $key = $subkey;
+        $num--;
+    }
+
+    return $ret;
+}
+
+sub word_based {
+    my $sentencesref = get_sentences();
+    handle_sentences($sentencesref);
+
+    # TODO: parameterize this stuff:
+    #dump_map(\%map);
+    $out = make_sentences(\%map, 300);
+    print "$out\n";
+}
+
+my $savebuf = "";
+sub handle_buffer {
+    my $buf = shift;
+    my $workbuf = $savebuf . $buf;
+    my $len = length $workbuf;
+
+    for (my $ct = 0; $ct < $len; $ct++) {
+        my $prefix = substr $workbuf, $ct, $depth;
+        my $suffix = substr $workbuf, $ct + $depth, $depth;
+
+        $map{$prefix}{$suffix} += 1;
+    }
+
+    #$char_index = substr($text, $i, $look_forward);
+    #$char_count = substr($text, $i+$look_forward, $look_forward);
+    #substr EXPR, OFFSET, LEN
+
+    $savebuf = substr $buf, -$depth;
+}
+
+sub character_based {
+    my $max = 5;
+    my $ct = 0;
+    my $buf = "";
+
+    while (my $line = <>) {
+        chomp($line);
+        $buf .= $line;
+        $ct++;
+        if ($ct >= $max) {
+            handle_buffer($buf);
+            $ct = 0;
+            $buf = "";
+        }
+    }
+
+    handle_buffer($buf);
+#    dump_map(\%map);
+    $out = make_sentences_char(\%map, 300);
+    print "$out\n";
+}
+
+#word_based;
+character_based;
