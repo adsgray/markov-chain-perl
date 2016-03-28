@@ -1,0 +1,11 @@
+
+div#output {
+    margin-top: 2em;
+    margin-left: 5em;
+    width: 25em;
+    color:#444;
+}
+
+div#footer {
+    font-size:75%;
+}
