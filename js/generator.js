@@ -2,6 +2,10 @@
 
 
 function pickRandomProperty(obj) {
+    return pickRandomArrayItem(Object.keys(obj));
+}
+
+function pickRandomProperty_bak(obj) {
     var result;
     var count = 0;
     for (var prop in obj)
